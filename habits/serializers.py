@@ -4,7 +4,7 @@ from typing import cast
 
 from rest_framework import serializers
 
-from habits.models import Habit
+from habits.models import Habit, HabitTemplate
 from habits.validators import run_habit_validators
 
 
@@ -136,3 +136,34 @@ class HabitPublicSerializer(serializers.ModelSerializer):
         if obj.related_habit_id:
             return str(obj.related_habit.action)
         return None
+
+
+class HabitTemplateSerializer(serializers.ModelSerializer):
+    """Карточка шаблона в каталоге (read-only)."""
+
+    suggested_related_slug = serializers.SlugRelatedField(
+        source="suggested_related_template",
+        slug_field="slug",
+        read_only=True,
+    )
+
+    class Meta:
+        model = HabitTemplate
+        fields = (
+            "id",
+            "slug",
+            "action",
+            "place",
+            "time",
+            "duration",
+            "periodicity",
+            "is_pleasant",
+            "reward",
+            "suggested_related_slug",
+            "category",
+            "tagline",
+            "pair_group",
+            "sort_order",
+            "is_featured",
+        )
+        read_only_fields = fields

@@ -8,12 +8,17 @@ from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
+from rest_framework.views import APIView
 
-from habits.models import Habit
+from habits.models import Habit, HabitTemplate
 from habits.paginators import HabitPageNumberPagination
 from habits.permissions import IsOwner
-from habits.serializers import HabitPublicSerializer, HabitSerializer
-from habits.services import copy_habit_to_user
+from habits.serializers import (
+    HabitPublicSerializer,
+    HabitSerializer,
+    HabitTemplateSerializer,
+)
+from habits.services import copy_habit_to_user, create_habit_from_template
 
 
 class HabitViewSet(viewsets.ModelViewSet):
@@ -82,4 +87,37 @@ class HabitPublicViewSet(viewsets.ReadOnlyModelViewSet):
         habit = self.get_object()
         copied = copy_habit_to_user(habit, request.user)
         serializer = HabitSerializer(copied, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class HabitTemplateViewSet(viewsets.ReadOnlyModelViewSet):
+    """Каталог шаблонов привычек (только чтение)."""
+
+    serializer_class = HabitTemplateSerializer
+    pagination_class = HabitPageNumberPagination
+    queryset = HabitTemplate.objects.all()
+
+
+class HabitFromTemplateView(APIView):
+    """Создание привычки из шаблона каталога."""
+
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request: Request, pk: int) -> Response:
+        """Создаёт привычку(и) по шаблону.
+
+        Args:
+            request: HTTP-запрос с JWT.
+            pk: Id шаблона.
+
+        Returns:
+            JSON созданной привычки (201) или 404.
+        """
+        try:
+            template = HabitTemplate.objects.get(pk=pk)
+        except HabitTemplate.DoesNotExist as exc:
+            raise Http404 from exc
+
+        habit = create_habit_from_template(template, request.user)
+        serializer = HabitSerializer(habit, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -1,6 +1,8 @@
-"""Сервисы копирования публичных привычек."""
+"""Сервисы копирования привычек и создания из шаблонов."""
 
-from habits.models import Habit
+from django.db import transaction
+
+from habits.models import Habit, HabitTemplate
 from users.models import User
 
 
@@ -71,4 +73,43 @@ def copy_habit_to_user(source: Habit, user: User) -> Habit:
         duration=source.duration,
         related_habit=related,
         reward=source.reward,
+    )
+
+
+@transaction.atomic
+def create_habit_from_template(template: HabitTemplate, user: User) -> Habit:
+    """Создаёт привычку(и) пользователя по шаблону каталога.
+
+    Args:
+        template: Шаблон из каталога.
+        user: Владелец новых привычек.
+
+    Returns:
+        Корневая созданная привычка (полезная или приятная).
+    """
+    if template.is_pleasant:
+        return _create_habit_from_fields(
+            user=user,
+            place=template.place,
+            time=template.time,
+            action=template.action,
+            is_pleasant=True,
+            periodicity=template.periodicity,
+            duration=template.duration,
+        )
+
+    related: Habit | None = None
+    if template.suggested_related_template_id:
+        related = create_habit_from_template(template.suggested_related_template, user)
+
+    return _create_habit_from_fields(
+        user=user,
+        place=template.place,
+        time=template.time,
+        action=template.action,
+        is_pleasant=False,
+        periodicity=template.periodicity,
+        duration=template.duration,
+        related_habit=related,
+        reward=template.reward,
     )
