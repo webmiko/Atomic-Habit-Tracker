@@ -67,3 +67,10 @@ class UserMeSerializer(serializers.ModelSerializer):
     def get_telegram_linked(self, obj: User) -> bool:
         """Возвращает True, если Telegram привязан (без раскрытия chat_id)."""
         return obj.telegram_linked
+
+
+class TelegramLinkResponseSerializer(serializers.Serializer):
+    """Ответ POST /api/users/telegram/link/ с одноразовым кодом."""
+
+    code = serializers.CharField(read_only=True)
+    expires_in_minutes = serializers.IntegerField(read_only=True)
