@@ -62,6 +62,16 @@ class HabitsAPITestCase(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_create_whitespace_reward_returns_400(self) -> None:
+        """POST полезной с наградой из одних пробелов возвращает 400."""
+        response = self.client.post(
+            reverse("habits:habit-list"),
+            self._useful_payload(reward="   ", related_habit=None),
+            format="json",
+            **self.auth,
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_list_only_own_habits(self) -> None:
         """GET возвращает только привычки текущего пользователя."""
         Habit.objects.create(

@@ -98,6 +98,8 @@ def test_rule6_useful_needs_reward_or_related() -> None:
     """Правило 6: полезной нужна награда или related_habit."""
     with pytest.raises(ValidationError):
         validate_useful_habit_has_reward(False, None, "")
+    with pytest.raises(ValidationError):
+        validate_useful_habit_has_reward(False, None, "   ")
 
 
 @pytest.mark.django_db

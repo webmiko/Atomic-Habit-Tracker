@@ -47,6 +47,37 @@ def test_cors_header_on_api_response() -> None:
 
 
 @pytest.mark.django_db
+def test_habit_create_ignores_user_field_in_body() -> None:
+    """Клиент не может назначить привычку другому пользователю через поле user."""
+    owner = User.objects.create_user(email="owner-sec@example.com", password="StrongPass123!")
+    other = User.objects.create_user(email="other-sec@example.com", password="StrongPass123!")
+    client = APIClient()
+    token = client.post(
+        reverse("token_obtain_pair"),
+        {"email": "owner-sec@example.com", "password": "StrongPass123!"},
+        format="json",
+    ).data["access"]
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+    response = client.post(
+        reverse("habits:habit-list"),
+        {
+            "user": other.pk,
+            "place": "Дом",
+            "time": "09:00:00",
+            "action": "Тест",
+            "is_pleasant": False,
+            "reward": "чай",
+            "duration": 30,
+            "periodicity": 1,
+            "is_public": False,
+        },
+        format="json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.data["user"] == owner.pk
+
+
+@pytest.mark.django_db
 def test_register_response_has_no_password_field() -> None:
     """Регистрация не возвращает пароль в теле ответа."""
     response = APIClient().post(

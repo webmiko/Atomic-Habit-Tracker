@@ -84,7 +84,7 @@ class HabitSerializer(serializers.ModelSerializer):
                 is_pleasant=bool(merged["is_pleasant"]),
                 related_habit=merged["related_habit"],
                 periodicity=cast(int, merged["periodicity"]),
-                reward=str(merged["reward"] or ""),
+                reward=str(merged["reward"] or "").strip(),
                 duration=cast(int, merged["duration"]),
             )
         except Exception as exc:

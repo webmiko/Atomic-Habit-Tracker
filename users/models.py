@@ -47,6 +47,12 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return str(self.email)
 
+    def save(self, *args: object, **kwargs: object) -> None:
+        """Сохраняет пользователя; пустой chat_id храним как NULL (unique)."""
+        if self.telegram_chat_id is not None and not str(self.telegram_chat_id).strip():
+            self.telegram_chat_id = None
+        super().save(*args, **kwargs)
+
     @property
     def telegram_linked(self) -> bool:
         """Возвращает True, если chat_id Telegram сохранён в профиле."""

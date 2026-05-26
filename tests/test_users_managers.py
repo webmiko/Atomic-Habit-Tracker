@@ -25,6 +25,22 @@ def test_create_superuser_sets_flags() -> None:
 
 
 @pytest.mark.django_db
+def test_empty_telegram_chat_id_saved_as_null() -> None:
+    """Пустой chat_id не ломает unique — в БД хранится NULL."""
+    from users.models import User
+
+    first = User.objects.create_user(email="tg1@example.com", password="StrongPass123!")
+    second = User.objects.create_user(email="tg2@example.com", password="StrongPass123!")
+    first.telegram_chat_id = ""
+    first.save()
+    second.telegram_chat_id = ""
+    second.save()
+    first.refresh_from_db()
+    second.refresh_from_db()
+    assert first.telegram_chat_id is None
+    assert second.telegram_chat_id is None
+
+
 def test_create_superuser_rejects_invalid_staff() -> None:
     """create_superuser с is_staff=False поднимает ValueError."""
     with pytest.raises(ValueError, match="is_staff"):

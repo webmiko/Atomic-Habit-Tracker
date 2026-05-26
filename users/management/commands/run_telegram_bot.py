@@ -48,7 +48,7 @@ class Command(BaseCommand):
             try:
                 updates = self._fetch_updates(token, offset)
             except requests.RequestException:
-                logger.exception("getUpdates failed")
+                logger.error("Telegram getUpdates failed")
                 time.sleep(5)
                 continue
 
@@ -108,7 +108,7 @@ class Command(BaseCommand):
             elif normalized.startswith("/link"):
                 self._handle_link_command(chat_id_str, normalized)
         except TelegramServiceError:
-            logger.exception("Failed to reply in chat_id=%s", chat_id_str)
+            logger.error("Failed to reply in chat_id=%s", chat_id_str)
 
     def _handle_link_command(self, chat_id: str, text: str) -> None:
         """Разбирает ``/link КОД`` и привязывает chat_id."""

@@ -7,6 +7,13 @@ MIN_PERIODICITY_DAYS = 1
 MAX_PERIODICITY_DAYS = 7
 
 
+def _normalized_reward(reward: str | None) -> str:
+    """Возвращает награду без пробелов по краям; пустая строка если только пробелы."""
+    if reward is None:
+        return ""
+    return str(reward).strip()
+
+
 def validate_duration_seconds(duration: int | None) -> None:
     """Проверяет, что длительность не превышает двух минут.
 
@@ -48,7 +55,7 @@ def validate_not_both_related_and_reward(
     Raises:
         ValidationError: Если заданы оба способа награды.
     """
-    if related_habit and reward:
+    if related_habit and _normalized_reward(reward):
         raise ValidationError("Нельзя указывать одновременно связанную привычку и награду.")
 
 
@@ -69,7 +76,7 @@ def validate_pleasant_habit_fields(
     """
     if not is_pleasant:
         return
-    if related_habit or reward:
+    if related_habit or _normalized_reward(reward):
         raise ValidationError("У приятной привычки не должно быть награды или связанной привычки.")
 
 
@@ -90,7 +97,7 @@ def validate_useful_habit_has_reward(
     """
     if is_pleasant:
         return
-    if not related_habit and not reward:
+    if not related_habit and not _normalized_reward(reward):
         raise ValidationError("Полезной привычке нужна награда или связанная приятная привычка.")
 
 
@@ -147,6 +154,7 @@ def run_habit_validators(
     Raises:
         ValidationError: При нарушении любого правила.
     """
+    reward = _normalized_reward(reward)
     validate_duration_seconds(duration)
     validate_periodicity_days(periodicity)
     validate_not_both_related_and_reward(related_habit, reward)
@@ -177,9 +185,10 @@ def run_template_validators(
     """
     validate_duration_seconds(duration)
     validate_periodicity_days(periodicity)
-    validate_not_both_related_and_reward(suggested_related_template, reward)
-    validate_pleasant_habit_fields(is_pleasant, suggested_related_template, reward)
-    validate_useful_habit_has_reward(is_pleasant, suggested_related_template, reward)
+    reward_norm = _normalized_reward(reward)
+    validate_not_both_related_and_reward(suggested_related_template, reward_norm)
+    validate_pleasant_habit_fields(is_pleasant, suggested_related_template, reward_norm)
+    validate_useful_habit_has_reward(is_pleasant, suggested_related_template, reward_norm)
     if suggested_related_template is not None:
         from habits.models import HabitTemplate
 

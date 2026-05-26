@@ -61,6 +61,12 @@ const Cabinet = {
     return String(value).slice(0, 5);
   },
 
+  escapeHtml(value) {
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
+  },
+
   badgeHtml(isPleasant) {
     return isPleasant
       ? '<span class="badge badge-pleasant">приятная</span>'
@@ -136,14 +142,16 @@ const Cabinet = {
       data.results.forEach((habit) => {
         const col = document.createElement("div");
         col.className = "col-12 col-md-6";
+        const action = this.escapeHtml(habit.action);
+        const place = this.escapeHtml(habit.place);
         col.innerHTML = `
           <div class="card habit-card h-100">
             <div class="card-body">
               <div class="d-flex justify-content-between">
-                <h3 class="h6">${habit.action}</h3>
+                <h3 class="h6">${action}</h3>
                 ${this.badgeHtml(habit.is_pleasant)}
               </div>
-              <p class="mb-1 small">${habit.place} · ${this.formatTime(habit.time)}</p>
+              <p class="mb-1 small">${place} · ${this.formatTime(habit.time)}</p>
               <p class="mb-2 small text-muted">
                 ${habit.duration} сек · каждые ${habit.periodicity} дн.
                 ${habit.is_public ? " · публичная" : ""}
@@ -277,15 +285,18 @@ const Cabinet = {
       data.results.forEach((habit) => {
         const col = document.createElement("div");
         col.className = "col-12 col-md-6";
+        const action = this.escapeHtml(habit.action);
+        const author = this.escapeHtml(habit.author_name);
+        const formula = this.escapeHtml(habit.formula);
         col.innerHTML = `
           <div class="card habit-card h-100">
             <div class="card-body">
               <div class="d-flex justify-content-between">
-                <h3 class="h6">${habit.action}</h3>
+                <h3 class="h6">${action}</h3>
                 ${this.badgeHtml(habit.is_pleasant)}
               </div>
-              <p class="mb-1 small">${habit.author_name}</p>
-              <p class="mb-2 small text-muted">${habit.formula}</p>
+              <p class="mb-1 small">${author}</p>
+              <p class="mb-2 small text-muted">${formula}</p>
               <button type="button" class="btn btn-outline-success btn-sm btn-open">Подробнее</button>
             </div>
           </div>`;
@@ -303,14 +314,14 @@ const Cabinet = {
     const body = document.getElementById("public-modal-body");
     let reward = "";
     if (habit.related_action) {
-      reward = `<p><strong>Связь:</strong> ${habit.related_action}</p>`;
+      reward = `<p><strong>Связь:</strong> ${this.escapeHtml(habit.related_action)}</p>`;
     } else if (habit.reward) {
-      reward = `<p><strong>Награда:</strong> ${habit.reward}</p>`;
+      reward = `<p><strong>Награда:</strong> ${this.escapeHtml(habit.reward)}</p>`;
     }
     body.innerHTML = `
-      <p>${habit.formula}</p>
-      <p class="small text-muted">Автор: ${habit.author_name}</p>
-      <p class="small">${habit.place} · ${this.formatTime(habit.time)} · ${habit.duration} сек</p>
+      <p>${this.escapeHtml(habit.formula)}</p>
+      <p class="small text-muted">Автор: ${this.escapeHtml(habit.author_name)}</p>
+      <p class="small">${this.escapeHtml(habit.place)} · ${this.formatTime(habit.time)} · ${habit.duration} сек</p>
       ${reward}`;
     this.publicModal.show();
   },
@@ -338,15 +349,18 @@ const Cabinet = {
         const col = document.createElement("div");
         col.className = "col-12 col-md-6";
         const featured = tpl.is_featured ? '<span class="badge bg-warning text-dark">топ</span>' : "";
+        const action = this.escapeHtml(tpl.action);
+        const tagline = this.escapeHtml(tpl.tagline || tpl.category);
+        const place = this.escapeHtml(tpl.place);
         col.innerHTML = `
           <div class="card habit-card h-100">
             <div class="card-body">
               <div class="d-flex justify-content-between gap-2">
-                <h3 class="h6">${tpl.action}</h3>
+                <h3 class="h6">${action}</h3>
                 <div>${featured} ${this.badgeHtml(tpl.is_pleasant)}</div>
               </div>
-              <p class="small text-muted mb-1">${tpl.tagline || tpl.category}</p>
-              <p class="small mb-2">${tpl.place} · ${this.formatTime(tpl.time)}</p>
+              <p class="small text-muted mb-1">${tagline}</p>
+              <p class="small mb-2">${place} · ${this.formatTime(tpl.time)}</p>
               <button type="button" class="btn btn-success btn-sm btn-add-tpl">Добавить к себе</button>
             </div>
           </div>`;

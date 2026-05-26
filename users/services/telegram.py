@@ -35,9 +35,10 @@ def send_message(chat_id: str, text: str) -> None:
             json={"chat_id": chat_id, "text": text},
             timeout=10,
         )
-    except requests.RequestException as exc:
-        logger.exception("Telegram request failed for chat_id=%s", chat_id)
-        raise TelegramServiceError("Failed to send Telegram message") from exc
+    except requests.RequestException:
+        # Не логируем traceback: в URL запроса попадает TELEGRAM_BOT_TOKEN.
+        logger.error("Telegram request failed for chat_id=%s", chat_id)
+        raise TelegramServiceError("Failed to send Telegram message") from None
 
     if not response.ok:
         logger.error(
