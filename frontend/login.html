@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Вход — Atomic Habit Tracker</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/custom.css" rel="stylesheet" />
+  </head>
+  <body class="d-flex align-items-center min-vh-100">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-5 col-lg-4">
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <h1 class="h4 mb-3">Вход</h1>
+              <div id="alert" class="alert alert-danger d-none" role="alert"></div>
+              <form id="login-form">
+                <div class="mb-3">
+                  <label class="form-label" for="email">Email</label>
+                  <input class="form-control" id="email" type="email" required />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="password">Пароль</label>
+                  <input class="form-control" id="password" type="password" required />
+                </div>
+                <button class="btn btn-success w-100" type="submit">Войти</button>
+              </form>
+              <p class="mt-3 mb-0 text-center form-hint">
+                Нет аккаунта?
+                <a href="register.html">Регистрация</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+      if (Auth.isLoggedIn()) {
+        window.location.href = "cabinet.html";
+      }
+      document.getElementById("login-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const alertEl = document.getElementById("alert");
+        alertEl.classList.add("d-none");
+        try {
+          await Auth.login(
+            document.getElementById("email").value.trim(),
+            document.getElementById("password").value,
+          );
+          window.location.href = "cabinet.html";
+        } catch (error) {
+          alertEl.textContent = error.message;
+          alertEl.classList.remove("d-none");
+        }
+      });
+    </script>
+  </body>
+</html>
