@@ -60,7 +60,7 @@ strict_equality = true
 exclude = ["_", "migrations"]
 
 [[tool.mypy.overrides]]
-module = ["django.*", "rest_framework.*", "rest_framework_simplejwt.*", "celery.*"]
+module = ["django.*", "rest_framework.*", "rest_framework_simplejwt.*", "celery.*", "drf_yasg.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
