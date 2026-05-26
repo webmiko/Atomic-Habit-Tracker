@@ -29,6 +29,8 @@ class HabitViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self) -> QuerySet[Habit]:
         """Возвращает только привычки авторизованного пользователя."""
+        if getattr(self, "swagger_fake_view", False):
+            return Habit.objects.none()
         return Habit.objects.filter(user=self.request.user)
 
     def get_permissions(self) -> list[BasePermission]:
@@ -55,6 +57,8 @@ class HabitPublicViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self) -> QuerySet[Habit]:
         """Публичные привычки других пользователей."""
+        if getattr(self, "swagger_fake_view", False):
+            return Habit.objects.none()
         return (
             Habit.objects.filter(is_public=True)
             .exclude(user=self.request.user)
