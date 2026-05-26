@@ -203,7 +203,7 @@ flowchart LR
 - Python **3.14+**
 - [Poetry](https://python-poetry.org/) 2.x
 - **PostgreSQL** 14+
-- **Redis** (с шага 7 — Celery)
+- **Redis** (брокер Celery и напоминания)
 
 ---
 

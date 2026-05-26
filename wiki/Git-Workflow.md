@@ -12,10 +12,9 @@ main          стабильные релизы, сдача курса
 |-------|-------------------|
 | `main` | после проверки на `develop`, теги релиза |
 | `develop` | merge feature после review |
-| `feature/step_1` | каркас Django |
-| `feature/step_2` | JWT, users, … |
+| `feature/step_N` | разработка в отдельной ветке |
 
-Имена feature-веток: `feature/step_<номер_этапа>`.
+Имена feature-веток: `feature/step_<номер>`.
 
 ## Типичный цикл
 
@@ -44,11 +43,12 @@ git push origin main
 - `.venv/`, `__pycache__/`, `.pytest_cache/`, `htmlcov/`, `coverage.txt`
 
 
+
 ## Текущее состояние
 
-| Ветка | Содержимое (на момент документации) |
-|-------|-------------------------------------|
+| Ветка | Содержимое |
+|-------|------------|
 | `feature/step_1` | полный MVP: habits API, шаблоны, Celery, Telegram, фронт, Docker |
-| `develop` / `main` | merge по мере сдачи этапов курса |
+| `develop` / `main` | merge по мере сдачи курса |
 
-После merge `feature/step_1` → `develop` следующие этапы — новые `feature/step_N`.
+После merge `feature/step_1` → `develop` новые задачи — ветки `feature/step_N`.
