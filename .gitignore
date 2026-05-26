@@ -1,0 +1,104 @@
+# Виртуальное окружение
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+
+# Логи
+*.log
+logs/*
+!logs/.gitkeep
+
+# Данные (если не нужно коммитить)
+# data/*.json
+# data/*.csv
+
+# IDE
+.idea/
+.vscode/
+.cursor/
+*.swp
+*.swo
+.DS_Store
+
+# Каталоги с префиксом "_" в имени — не коммитить целиком (вложенное игнорируется автоматически).
+# Видимы в файловом менеджере (в отличие от скрытых ".имя"). Примеры: _kb/, _drafts/, _local-notes/
+# Исключение для отдельной отслеживаемой папки: !_имя/
+_*/
+
+# Переменные окружения
+.env
+.env.local
+.env.*.local
+
+# Загрузки (превью, аватары) — не коммитить локальные файлы
+media/
+
+# drf-yasg (результат collectstatic)
+staticfiles/drf-yasg/
+
+# Базы данных
+*.db
+*.sqlite
+*.sqlite3
+*.db3
+
+# Отчеты и тесты
+reports/
+temp_reports/
+.coverage
+.coverage.*
+.pytest_cache/
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+
+# Markdown: игнор всего, кроме README*, wiki/ и отчёта о покрытии
+*.md
+!**/README*.md
+!**/readme*.md
+!**/Readme*.md
+!wiki/
+!wiki/**/*.md
+!COVERAGE.md
+
+# Временные файлы
+*.tmp
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Git (отдельный репозиторий)
+.git_local/
+
+# Шаблоны коммитов (не коммитить)
+.git_commit_template
+
+# Пустые папки (можно добавить .gitkeep если нужно)
+# static/css/.gitkeep
+# static/js/.gitkeep
+# static/images/.gitkeep
+# templates/.gitkeep
