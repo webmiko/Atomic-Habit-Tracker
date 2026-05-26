@@ -51,3 +51,32 @@ class User(AbstractUser):
     def telegram_linked(self) -> bool:
         """Возвращает True, если chat_id Telegram сохранён в профиле."""
         return bool(self.telegram_chat_id)
+
+
+class TelegramLinkCode(models.Model):
+    """Одноразовый код привязки Telegram к аккаунту пользователя.
+
+    Attributes:
+        user: Владелец кода.
+        code: Строка для команды ``/link`` в боте.
+        expires_at: Момент истечения кода (обычно 15 минут).
+        created_at: Время создания записи.
+    """
+
+    user = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="telegram_link_codes",
+        verbose_name="пользователь",
+    )
+    code = models.CharField("код", max_length=16, unique=True, db_index=True)
+    expires_at = models.DateTimeField("истекает")
+    created_at = models.DateTimeField("создан", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "код привязки Telegram"
+        verbose_name_plural = "коды привязки Telegram"
+        ordering = ("-created_at",)
+
+    def __str__(self) -> str:
+        return f"{self.code} ({self.user_id})"

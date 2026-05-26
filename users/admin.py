@@ -3,7 +3,18 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
-from users.models import User
+from users.models import TelegramLinkCode, User
+
+
+@admin.register(TelegramLinkCode)
+class TelegramLinkCodeAdmin(admin.ModelAdmin):
+    """Просмотр активных кодов привязки."""
+
+    list_display = ("code", "user", "expires_at", "created_at")
+    list_filter = ("expires_at",)
+    search_fields = ("code", "user__email")
+    raw_id_fields = ("user",)
+    readonly_fields = ("created_at",)
 
 
 @admin.register(User)
