@@ -58,11 +58,11 @@ class UserMeSerializer(serializers.ModelSerializer):
 
     def get_habits_count(self, obj: User) -> int:
         """Возвращает число личных привычек пользователя."""
-        return getattr(obj, "habits_count", 0)
+        return int(obj.habits.count())
 
     def get_public_habits_count(self, obj: User) -> int:
         """Возвращает число публичных привычек пользователя."""
-        return getattr(obj, "public_habits_count", 0)
+        return int(obj.habits.filter(is_public=True).count())
 
     def get_telegram_linked(self, obj: User) -> bool:
         """Возвращает True, если Telegram привязан (без раскрытия chat_id)."""
