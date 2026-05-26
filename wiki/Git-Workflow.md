@@ -48,5 +48,5 @@ git push origin main
 
 | Ветка | Назначение |
 |-------|------------|
-| `feature/step_1` | каркас Django ✅ |
-| `feature/step_2` | JWT и пользователи (следующий) |
+| `feature/step_1` | каркас Django + JWT, register, `/me/` |
+| `feature/step_2` | модель Habit (следующий) |

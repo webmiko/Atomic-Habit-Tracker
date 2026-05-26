@@ -189,7 +189,8 @@ flowchart LR
 |------|--------|-------|
 | Окружение, Postgres, зависимости | ✅ | `main` / `develop` |
 | Каркас Django | ✅ | `feature/step_1` |
-| JWT, API, напоминания, фронт | ⬜ | `feature/step_N` |
+| JWT и профиль пользователя | ✅ | `feature/step_1` |
+| API привычек, напоминания, фронт | ⬜ | `feature/step_N` |
 
 `main` ← `develop` ← `feature/step_N` (PR после каждого этапа).
 
