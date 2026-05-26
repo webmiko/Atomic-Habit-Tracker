@@ -266,6 +266,17 @@ poetry run pytest --cov=config --cov=users --cov=habits --cov-report=term-missin
 | `make lint` / `format` / `typecheck` / `test` | см. `Makefile` |
 | `make check` | lint + format + mypy + test |
 
+### Фронтенд
+
+```bash
+poetry run python manage.py runserver
+# из каталога frontend/ — Live Server :5500 или:
+cd frontend && python -m http.server 5500
+```
+
+Демо-аккаунты: `poetry run python manage.py seed_demo_users`  
+(`demo_a@example.com` / `demo_b@example.com`, пароль `DemoPass123!`).
+
 ---
 
 ## Структура репозитория
@@ -275,6 +286,7 @@ poetry run pytest --cov=config --cov=users --cov=habits --cov-report=term-missin
 ├── users/               # User (email), admin
 ├── habits/              # приложение привычек (модели — ит.3)
 ├── tests/               # pytest + pytest-django
+├── frontend/            # Bootstrap 5.3 + vanilla JS (Live Server :5500)
 ├── manage.py
 ├── pyproject.toml
 ├── poetry.lock
