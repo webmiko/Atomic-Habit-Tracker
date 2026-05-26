@@ -73,8 +73,15 @@ filterwarnings = ["ignore::DeprecationWarning"]
 [tool.coverage.run]
 source = ["config", "users", "habits"]
 branch = true
-omit = ["tests/*", "*/migrations/*"]
+omit = [
+    "tests/*",
+    "*/migrations/*",
+    "config/wsgi.py",
+    "config/asgi.py",
+    "users/management/commands/*",
+]
 
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
+fail_under = 80
