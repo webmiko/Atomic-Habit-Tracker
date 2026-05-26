@@ -1,0 +1,104 @@
+# Локальный прод-подобный стек: PostgreSQL, Redis, Gunicorn, Celery.
+# Запуск: docker compose up --build
+# API и фронт: http://127.0.0.1:8000/login.html
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: atomic_habits
+      POSTGRES_USER: atomic
+      POSTGRES_PASSWORD: atomic
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atomic -d atomic_habits"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_NAME: atomic_habits
+      DB_USER: atomic
+      DB_PASSWORD: atomic
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      ALLOWED_HOSTS: localhost,127.0.0.1,web
+      DEBUG: "False"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery_worker:
+    build: .
+    entrypoint: []
+    command:
+      - poetry
+      - run
+      - celery
+      - -A
+      - config
+      - worker
+      - -l
+      - info
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_NAME: atomic_habits
+      DB_USER: atomic
+      DB_PASSWORD: atomic
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery_beat:
+    build: .
+    entrypoint: []
+    command:
+      - poetry
+      - run
+      - celery
+      - -A
+      - config
+      - beat
+      - -l
+      - info
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_NAME: atomic_habits
+      DB_USER: atomic
+      DB_PASSWORD: atomic
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:
