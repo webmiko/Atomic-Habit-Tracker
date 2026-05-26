@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Трекер привычек по принципам Atomic Habits"
 authors = ["Niko"]
 readme = "README.md"
-packages = [{ include = "atomic_habit_tracker", from = "src" }]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.14"
@@ -19,6 +19,8 @@ redis = "^7.4.0"
 django-celery-beat = "^2.9.0"
 psycopg2-binary = "^2.9.12"
 requests = "^2.34.2"
+gunicorn = "^23.0.0"
+whitenoise = "^6.9.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11"
@@ -34,15 +36,15 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 119
 target-version = "py314"
-src = ["src"]
-exclude = [".git", ".venv", "__pycache__", "_*"]
+src = ["config", "users", "habits", "tests"]
+exclude = [".git", ".venv", "__pycache__", "_*", "**/migrations"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
 ignore = []
 
 [tool.ruff.lint.isort]
-known-first-party = ["atomic_habit_tracker"]
+known-first-party = ["config", "users", "habits"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -50,27 +52,45 @@ indent-style = "space"
 
 [tool.mypy]
 python_version = "3.14"
-mypy_path = "src"
-files = ["src", "main.py", "tests"]
+files = ["config", "users", "habits", "tests"]
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 check_untyped_defs = true
 no_implicit_optional = true
 strict_equality = true
-exclude = ["_"]
+exclude = ["_", "migrations"]
+
+[[tool.mypy.overrides]]
+module = [
+    "django.*",
+    "rest_framework.*",
+    "rest_framework_simplejwt.*",
+    "celery.*",
+    "drf_yasg.*",
+    "whitenoise.*",
+]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["."]
 addopts = "-v --tb=short"
 filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.coverage.run]
-source = ["src"]
+source = ["config", "users", "habits"]
 branch = true
-omit = ["tests/*"]
+omit = [
+    "tests/*",
+    "*/migrations/*",
+    "config/wsgi.py",
+    "config/asgi.py",
+    "users/management/commands/*",
+]
 
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
+fail_under = 80
