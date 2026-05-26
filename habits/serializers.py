@@ -95,3 +95,44 @@ class HabitSerializer(serializers.ModelSerializer):
             raise
 
         return attrs
+
+
+class HabitPublicSerializer(serializers.ModelSerializer):
+    """Публичная карточка привычки без PII владельца."""
+
+    author_name = serializers.SerializerMethodField()
+    formula = serializers.SerializerMethodField()
+    related_action = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Habit
+        fields = (
+            "id",
+            "action",
+            "place",
+            "time",
+            "duration",
+            "periodicity",
+            "is_pleasant",
+            "reward",
+            "related_action",
+            "author_name",
+            "formula",
+        )
+        read_only_fields = fields
+
+    def get_author_name(self, obj: Habit) -> str:
+        """Возвращает отображаемое имя автора без email."""
+        name = (obj.user.public_display_name or "").strip()
+        return name if name else "Участник"
+
+    def get_formula(self, obj: Habit) -> str:
+        """Формулировка привычки в духе «место — время — действие»."""
+        time_str = obj.time.strftime("%H:%M")
+        return f"В {obj.place} в {time_str} я буду {obj.action}"
+
+    def get_related_action(self, obj: Habit) -> str | None:
+        """Текст связанной приятной привычки без id чужой записи."""
+        if obj.related_habit_id:
+            return str(obj.related_habit.action)
+        return None
