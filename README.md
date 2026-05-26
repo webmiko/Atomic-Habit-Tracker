@@ -161,7 +161,7 @@ flowchart TB
 
   UPD{"хотя бы один<br/>канал успешен?"}
   UPD -->|да| STAMP["last_notified_at = now"]
-  UPD -->|нет| LOG["logger.exception<br/>без stamp"]
+  UPD -->|нет| LOG["logger.error<br/>без stamp"]
   STAMP --> LOOP
   SKIP --> LOOP
 ```
@@ -188,11 +188,13 @@ flowchart LR
 | Этап | Статус | Ветка |
 |------|--------|-------|
 | Окружение, Postgres, зависимости | ✅ | `main` / `develop` |
-| Каркас Django | ✅ | `feature/step_1` |
-| JWT и профиль пользователя | ✅ | `feature/step_1` |
-| API привычек, напоминания, фронт | ⬜ | `feature/step_N` |
+| Каркас Django, JWT, профиль | ✅ | `feature/step_1` |
+| API привычек, валидаторы, шаблоны | ✅ | `feature/step_1` |
+| Celery, Telegram, email, фронт | ✅ | `feature/step_1` |
+| Docker / Gunicorn / WhiteNoise | ✅ | `feature/step_1` |
 
-`main` ← `develop` ← `feature/step_N` (PR после каждого этапа).
+`main` ← `develop` ← `feature/step_N` (PR после каждого этапа).  
+Проверка качества: `make check` (ruff, mypy, pytest, покрытие ≥80%).
 
 ---
 
@@ -226,8 +228,6 @@ CREATE DATABASE atomic_habits;
 
 В `.env`: `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`.
 
-После шага 1:
-
 ```bash
 poetry run python manage.py migrate
 poetry run python manage.py runserver
@@ -236,15 +236,18 @@ poetry run python manage.py runserver
 ### Переменные окружения
 
 Шаблон для копирования — **`.env.template`** (в репозитории). Локальный **`.env`**
-не коммитится; создайте его из шаблона.
+не коммитится; создайте его из шаблона. Подробнее — [wiki/Environment-Variables.md](wiki/Environment-Variables.md).
 
 | Группа | Назначение |
 |--------|------------|
 | `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` | Django |
+| `ENABLE_PROD_SECURITY` | HTTPS-куки и редирект (prod за TLS-прокси) |
 | `DB_*` | PostgreSQL |
-| `CELERY_*` | Redis |
-| `TELEGRAM_BOT_TOKEN` | бот |
+| `CORS_ALLOWED_ORIGINS`, `FRONTEND_URL` | фронт на :5500 или same-origin |
+| `CELERY_*` | Redis, broker для напоминаний |
+| `TELEGRAM_BOT_TOKEN` | бот привязки и напоминаний |
 | `EMAIL_*` | по умолчанию console backend для отладки |
+| `JWT_ACCESS_MINUTES`, `JWT_REFRESH_DAYS` | опционально, иначе defaults SimpleJWT |
 
 ---
 
@@ -311,7 +314,7 @@ docker compose exec web poetry run python manage.py seed_demo_users
 ```text
 ├── config/              # settings, urls, wsgi
 ├── users/               # User (email), admin
-├── habits/              # приложение привычек (модели — ит.3)
+├── habits/              # Habit, HabitTemplate, API, валидаторы, Celery
 ├── tests/               # pytest + pytest-django
 ├── frontend/            # Bootstrap 5.3 + vanilla JS (Live Server :5500)
 ├── Dockerfile
@@ -334,13 +337,16 @@ docker compose exec web poetry run python manage.py seed_demo_users
 | POST | `/api/users/register/` | регистрация |
 | POST | `/api/token/`, `/api/token/refresh/` | JWT |
 | GET/PATCH | `/api/users/me/` | профиль и настройки |
-| GET/POST | `/api/habits/` | мои привычки |
+| POST | `/api/users/telegram/link/` | одноразовый код привязки Telegram |
+| GET/POST | `/api/habits/` | мои привычки (пагинация 5) |
 | GET/PATCH/DELETE | `/api/habits/{id}/` | одна привычка |
 | GET | `/api/habits/public/` | публичная лента |
 | POST | `/api/habits/public/{id}/copy/` | копия к себе |
 | GET | `/api/habits/templates/` | каталог шаблонов |
+| POST | `/api/habits/from-template/{id}/` | привычка из шаблона |
 
-Документация: `/swagger/`, `/redoc/`.
+Полная таблица и примеры curl — [wiki/API.md](wiki/API.md).  
+Интерактивная схема: `/swagger/`, `/redoc/`.
 
 ---
 

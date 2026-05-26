@@ -16,9 +16,7 @@ make test       # pytest + cov (config, users, habits), fail-under 80%
 make check      # ruff + format + mypy + test
 ```
 
-
-```toml
-```
+В `pyproject.toml` и `Makefile` источники покрытия: `config`, `users`, `habits`.
 
 ## Типы тестов
 
@@ -31,7 +29,7 @@ make check      # ruff + format + mypy + test
 | Pagination | `count`, `results` ≤ 5, вторая страница |
 | Celery | eager + `mail.outbox`, mock Telegram |
 | Swagger | `GET /swagger.json` — ключевые paths |
-| Security | нет SECRET_KEY в ответах API |
+| Security | `tests/test_security.py`: SECRET_KEY, CORS, подмена `user`, пароль не в ответе |
 
 ## Celery в тестах
 

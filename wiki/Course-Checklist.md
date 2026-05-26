@@ -4,8 +4,12 @@
 
 ## Прогресс
 
+Автоматическая проверка в репозитории: **`make check`** (ruff, mypy, pytest, покрытие ≥80%).
+
+Перед сдачей отметьте `[x]` вручную после демо (worker + beat, фронт, Swagger).
+
 ```text
-[░░░░░░░░░░░░░░░░░░░░]  0/13
+[████████████████████]  13/13 по коду и тестам — подтвердите демо на сдаче
 ```
 
 ## Критерии
@@ -41,17 +45,23 @@
 ## Перед демонстрацией
 
 ```bash
-poetry install
-cp .env.template .env   # если ещё нет
+make check            # или: make install && make check
+cp .env.template .env # если ещё нет
 poetry run python manage.py migrate
 poetry run python manage.py runserver
-
-# отдельные терминалы:
-poetry run celery -A config worker -l info
-poetry run celery -A config beat -l info
 ```
 
-Фронт: Live Server `frontend/` на порту 5500.
+Отдельные терминалы (критерии 2 и 9):
+
+```bash
+poetry run celery -A config worker -l info
+poetry run celery -A config beat -l info
+poetry run python manage.py run_telegram_bot   # при демо Telegram
+```
+
+Фронт: `http://127.0.0.1:8000/login.html` (same-origin) или Live Server `frontend/` на :5500.
+
+Альтернатива: `docker compose up --build` — см. [README](../README.md).
 
 ## Связанные страницы wiki
 

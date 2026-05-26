@@ -10,9 +10,9 @@
 | `public_display_name` | CharField | имя в публичной ленте |
 | `notify_by_email` | bool, default True | канал email |
 | `notify_by_telegram` | bool, default False | канал Telegram |
-| `telegram_chat_id` | CharField, null, unique | после привязки бота |
+| `telegram_chat_id` | CharField, null, unique | после привязки бота; пустая строка → NULL при save |
 
-`telegram_chat_id` не отдаётся в public API и списках шаблонов.
+`telegram_chat_id` не отдаётся в REST API (в `/me/` только `telegram_linked`).
 
 ## Habit (`habits/models.py`)
 
@@ -51,7 +51,7 @@ Seed: 13 pleasant + 16 useful + 16 пар.
 | 3 | `related_habit` только pleasant **того же** user | 400 |
 | 4 | У pleasant: пустые `related_habit` и `reward` | 400 |
 | 5 | `periodicity` в диапазоне 1–7 | 400 |
-| 6 | У useful (`is_pleasant=False`): нужен `reward` **или** `related_habit` | 400 |
+| 6 | У useful: нужен `reward` **или** `related_habit` (пробелы в reward не считаются) | 400 |
 
 ## Удаление pleasant с связью
 

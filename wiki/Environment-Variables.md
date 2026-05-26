@@ -14,6 +14,7 @@ cp .env.template .env
 | `DEBUG` | да | `True` локально, `False` на проде |
 | `ALLOWED_HOSTS` | да | через запятую: `localhost,127.0.0.1,testserver` |
 | `TIME_ZONE` | да | например `Europe/Moscow` |
+| `ENABLE_PROD_SECURITY` | нет | `True` — `SECURE_SSL_REDIRECT`, secure-куки, `X_FRAME_OPTIONS=DENY` (только за TLS-прокси) |
 
 ## PostgreSQL
 

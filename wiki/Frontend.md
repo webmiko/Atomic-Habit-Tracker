@@ -10,9 +10,10 @@ frontend/
   login.html
   cabinet.html          # shell: navbar + вкладки
   css/custom.css
-  js/api.js             # base URL, Authorization
-  js/auth.js            # login, refresh, logout
-  js/cabinet.js         # hash-роутинг
+  js/config.js          # API_BASE_URL (:5500 → :8000, иначе same-origin)
+  js/api.js             # fetch + JWT, refresh при 401
+  js/auth.js            # login, refresh, logout (localStorage)
+  js/cabinet.js         # hash-роутинг, escapeHtml для полей API
 ```
 
 ## Вкладки кабинета
@@ -24,12 +25,19 @@ frontend/
 | `#templates` | каталог 16 пар | `/api/habits/templates/` |
 | `#settings` | профиль, оповещения, код Telegram | `/api/users/me/` |
 
+## Базовый URL API
+
+`config.js`: при открытии с Live Server (`:5500`) запросы идут на `http://127.0.0.1:8000`;
+при раздаче через Django/WhiteNoise — `window.location.origin` (один порт для UI и API).
+
 ## JWT в браузере
 
 После `POST /api/token/` — `access` и `refresh` в `localStorage`.
 
 `api.js` добавляет заголовок `Authorization: Bearer ...`. При 401 — попытка refresh
 (`auth.js`), затем повтор запроса или редирект на `login.html`.
+
+Поля с API в карточках экранируются через `escapeHtml()` (защита от XSS при `innerHTML`).
 
 ## CORS
 

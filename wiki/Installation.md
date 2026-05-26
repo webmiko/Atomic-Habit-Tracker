@@ -12,7 +12,7 @@
 ```bash
 git clone https://github.com/webmiko/Atomic-Habit-Tracker.git
 cd Atomic-Habit-Tracker
-git checkout develop          # или актуальная feature-ветка
+git checkout feature/step_1   # или develop / main после merge
 poetry install
 ```
 
@@ -65,12 +65,24 @@ poetry run celery -A config beat -l info
 poetry run python manage.py run_telegram_bot
 ```
 
-Имена management-команд уточняются при реализации этапа Telegram.
+## Docker Compose (опционально)
+
+Полный стек (PostgreSQL, Redis, web, worker, beat) — в [README § Деплой](../README.md):
+
+```bash
+cp .env.template .env
+docker compose up --build
+```
 
 ## Фронтенд
 
-Папка `frontend/`. Локально — Live Server на порту **5500** (должен быть в `CORS_ALLOWED_ORIGINS`).
-См. [Frontend.md](Frontend.md).
+Папка `frontend/`. Варианты:
+
+- **Same-origin:** `runserver` или Docker — `http://127.0.0.1:8000/login.html` (CORS не нужен).
+- **Live Server :5500** — origin должен быть в `CORS_ALLOWED_ORIGINS`; API — `http://127.0.0.1:8000`
+  (см. `frontend/js/config.js`).
+
+Подробнее — [Frontend.md](Frontend.md).
 
 ## Интерпретатор IDE
 

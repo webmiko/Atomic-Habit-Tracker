@@ -46,7 +46,9 @@ git push origin main
 
 ## Текущее состояние
 
-| Ветка | Назначение |
-|-------|------------|
-| `feature/step_1` | каркас Django + JWT, register, `/me/` |
-| `feature/step_2` | модель Habit (следующий) |
+| Ветка | Содержимое (на момент документации) |
+|-------|-------------------------------------|
+| `feature/step_1` | полный MVP: habits API, шаблоны, Celery, Telegram, фронт, Docker |
+| `develop` / `main` | merge по мере сдачи этапов курса |
+
+После merge `feature/step_1` → `develop` следующие этапы — новые `feature/step_N`.

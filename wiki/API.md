@@ -24,7 +24,7 @@
 | Метод | URL | Описание |
 |-------|-----|----------|
 | GET | `/api/habits/` | список своих, пагинация 5 |
-| POST | `/api/habits/` | создать, `user` подставляется автоматически |
+| POST | `/api/habits/` | создать; `user` только read-only, владелец = JWT |
 | GET | `/api/habits/{id}/` | одна своя |
 | PATCH | `/api/habits/{id}/` | изменить свою, в т.ч. `is_public` |
 | DELETE | `/api/habits/{id}/` | удалить свою |

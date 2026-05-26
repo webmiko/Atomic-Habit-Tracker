@@ -23,11 +23,15 @@
 Django 6 · DRF · SimpleJWT · PostgreSQL · Celery · Redis · drf-yasg · requests (Telegram) ·
 Bootstrap 5.3 (статический фронт).
 
-## Быстрые ссылки (после запуска backend)
+## Быстрые ссылки
 
 | URL | Назначение |
 |-----|------------|
+| `http://127.0.0.1:8000/login.html` | вход (Gunicorn / `runserver` + WhiteNoise) |
+| `http://127.0.0.1:8000/cabinet.html` | кабинет |
 | `http://127.0.0.1:8000/admin/` | Django Admin |
 | `http://127.0.0.1:8000/swagger/` | Swagger UI |
 | `http://127.0.0.1:8000/redoc/` | ReDoc |
-| `http://127.0.0.1:5500/` | фронт (Live Server) |
+| `http://127.0.0.1:5500/login.html` | фронт отдельно (Live Server, CORS на :8000) |
+
+Docker Compose: один порт **8000** для API и статики — см. [README § Деплой](../README.md).

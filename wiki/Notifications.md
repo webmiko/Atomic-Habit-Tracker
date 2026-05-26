@@ -21,7 +21,8 @@
    - если `notify_by_email` → `send_mail`;
    - если `notify_by_telegram` и есть `telegram_chat_id` → Telegram.
 5. Если **хотя бы один** канал успешен → `last_notified_at = now`.
-6. Ошибка одного канала **не отменяет** другой; ошибки — в лог (`logger.exception`).
+6. Ошибка одного канала **не отменяет** другой; ошибки — в лог (`logger.exception` для email,
+   `logger.error` для Telegram — без traceback с URL, содержащим bot token).
 
 Текст: «Напоминание: {action} в {time} в {place}».
 

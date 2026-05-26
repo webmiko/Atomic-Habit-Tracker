@@ -6,10 +6,10 @@
 ## Слои
 
 ```text
-┌─────────────┐     JWT + JSON      ┌──────────────────┐
-│  frontend/  │ ──────────────────► │  Django + DRF    │
-│  Bootstrap  │ ◄────────────────── │  users · habits  │
-└─────────────┘                     └────────┬─────────┘
+┌─────────────┐     JWT + JSON      ┌──────────────────────────┐
+│  frontend/  │ ──────────────────► │  Gunicorn + Django + DRF │
+│  Bootstrap  │ ◄────────────────── │  WhiteNoise (статика)    │
+└─────────────┘                     └────────┬─────────────────┘
                                            │
                     ┌──────────────────────┼──────────────────────┐
                     ▼                      ▼                      ▼
@@ -45,7 +45,10 @@
 
 ## Безопасность (кратко)
 
-- Queryset личных привычек: только `request.user`.
+- Queryset личных привычек: только `request.user`; поле `user` в POST игнорируется (read-only).
 - Чужой объект по id → **404**, не 403.
 - Public serializer без email, `user_id`, `telegram_chat_id`.
-- Секреты только из `os.getenv` / `.env`.
+- Секреты только из `os.getenv` / `.env`; `SECRET_KEY` обязателен при `DEBUG=False`.
+- `ENABLE_PROD_SECURITY=True` — HTTPS-куки и редирект (prod).
+- Telegram: не логировать traceback с URL, содержащим bot token.
+- Фронт: `escapeHtml()` для пользовательских строк в `cabinet.js`.
