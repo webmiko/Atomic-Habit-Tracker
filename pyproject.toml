@@ -1,0 +1,76 @@
+[tool.poetry]
+name = "atomic-habit-tracker"
+version = "0.1.0"
+description = "Трекер привычек по принципам Atomic Habits"
+authors = ["Niko"]
+readme = "README.md"
+packages = [{ include = "atomic_habit_tracker", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.14"
+python-dotenv = "^1.0"
+django = "^6.0.5"
+djangorestframework = "^3.17.1"
+djangorestframework-simplejwt = "^5.5.1"
+django-cors-headers = "^4.9.0"
+drf-yasg = "^1.21.15"
+celery = "^5.6.3"
+redis = "^7.4.0"
+django-celery-beat = "^2.9.0"
+psycopg2-binary = "^2.9.12"
+requests = "^2.34.2"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11"
+mypy = "^1.15"
+pytest = "^8.3"
+pytest-cov = "^6.0"
+pytest-django = "^4.12.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 119
+target-version = "py314"
+src = ["src"]
+exclude = [".git", ".venv", "__pycache__", "_*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["atomic_habit_tracker"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.14"
+mypy_path = "src"
+files = ["src", "main.py", "tests"]
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+strict_equality = true
+exclude = ["_"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-v --tb=short"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = ["tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
