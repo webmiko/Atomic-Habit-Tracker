@@ -277,6 +277,33 @@ cd frontend && python -m http.server 5500
 Демо-аккаунты: `poetry run python manage.py seed_demo_users`  
 (`demo_a@example.com` / `demo_b@example.com`, пароль `DemoPass123!`).
 
+При раздаче через Gunicorn/WhiteNoise (см. ниже) фронт и API на одном порту —
+`frontend/js/config.js` берёт `window.location.origin` (кроме Live Server `:5500`).
+
+### Деплой (Docker Compose)
+
+Стек: PostgreSQL, Redis, Gunicorn + WhiteNoise (фронт из `frontend/`), Celery worker и beat.
+
+```bash
+cp .env.template .env   # SECRET_KEY обязателен; для compose подойдут DB_* из примера ниже
+docker compose up --build
+# или: make docker-up
+```
+
+- API и UI: http://127.0.0.1:8000/login.html (корень `/` → `login.html`)
+- Swagger: http://127.0.0.1:8000/swagger/
+
+В `docker-compose.yml` для сервиса `web` заданы `DB_HOST=db`, Redis и `DEBUG=False`.
+Локальный `.env` с `DB_HOST=localhost` не мешает — переменные compose перекрывают хост БД.
+
+После первого запуска (опционально, в контейнере web):
+
+```bash
+docker compose exec web poetry run python manage.py seed_demo_users
+```
+
+Остановка: `docker compose down` или `make docker-down`.
+
 ---
 
 ## Структура репозитория
@@ -287,6 +314,9 @@ cd frontend && python -m http.server 5500
 ├── habits/              # приложение привычек (модели — ит.3)
 ├── tests/               # pytest + pytest-django
 ├── frontend/            # Bootstrap 5.3 + vanilla JS (Live Server :5500)
+├── Dockerfile
+├── docker-compose.yml
+├── scripts/docker-entrypoint.sh
 ├── manage.py
 ├── pyproject.toml
 ├── poetry.lock
@@ -324,6 +354,7 @@ cd frontend && python -m http.server 5500
 | celery, redis, django-celery-beat | периодические задачи |
 | psycopg2-binary | PostgreSQL |
 | requests | Telegram Bot API |
+| gunicorn, whitenoise | прод-сервер и статика фронта |
 | python-dotenv | переменные из `.env` |
 
 Dev: pytest, pytest-django, pytest-cov, ruff, mypy.

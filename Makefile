@@ -1,4 +1,4 @@
-.PHONY: install lint format typecheck test check run migrate
+.PHONY: install lint format typecheck test check run migrate docker-up docker-down
 
 install:
 	poetry install
@@ -26,3 +26,9 @@ run:
 
 migrate:
 	poetry run python manage.py migrate
+
+docker-up:
+	docker compose up --build -d
+
+docker-down:
+	docker compose down
