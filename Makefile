@@ -1,4 +1,4 @@
-.PHONY: install lint format typecheck test check run
+.PHONY: install lint format typecheck test check run migrate
 
 install:
 	poetry install
@@ -13,9 +13,12 @@ typecheck:
 	poetry run mypy .
 
 test:
-	poetry run pytest --cov=src --cov-report=term-missing
+	poetry run pytest --cov=config --cov=users --cov=habits --cov-report=term-missing
 
 check: lint format typecheck test
 
 run:
-	poetry run python main.py
+	poetry run python manage.py runserver
+
+migrate:
+	poetry run python manage.py migrate

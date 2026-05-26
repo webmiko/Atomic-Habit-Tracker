@@ -188,8 +188,8 @@ flowchart LR
 | Этап | Статус | Ветка |
 |------|--------|-------|
 | Окружение, Postgres, зависимости | ✅ | `main` / `develop` |
-| Каркас Django | 🔄 | `feature/step_1` |
-| API, напоминания, фронт | ⬜ | `feature/step_N` |
+| Каркас Django | ✅ | `feature/step_1` |
+| JWT, API, напоминания, фронт | ⬜ | `feature/step_N` |
 
 `main` ← `develop` ← `feature/step_N` (PR после каждого этапа).
 
@@ -269,22 +269,18 @@ poetry run pytest --cov=config --cov=users --cov=habits --cov-report=term-missin
 
 ## Структура репозитория
 
-**Целевая** (после шага 1):
-
 ```text
-├── config/              # settings, urls, celery
-├── users/               # User, JWT, Telegram-сервис
-├── habits/              # Habit, API, валидаторы, задачи
-├── tests/
-├── frontend/            # HTML + Bootstrap 5.3
+├── config/              # settings, urls, wsgi
+├── users/               # User (email), admin
+├── habits/              # приложение привычек (модели — ит.3)
+├── tests/               # pytest + pytest-django
 ├── manage.py
 ├── pyproject.toml
 ├── poetry.lock
 ├── .env.template
+├── wiki/
 └── README.md
 ```
-
-Сейчас (до завершения шага 1): временный каркас `src/atomic_habit_tracker/` и `main.py`.
 
 ---
 
