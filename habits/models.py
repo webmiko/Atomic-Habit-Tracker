@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from habits.validators import run_habit_validators
+from habits.validators import run_habit_validators, run_template_validators
 
 
 class Habit(models.Model):
@@ -76,6 +76,90 @@ class Habit(models.Model):
                 action=self.action,
                 is_pleasant=self.is_pleasant,
                 related_habit=self.related_habit,
+                periodicity=self.periodicity,
+                reward=self.reward,
+                duration=self.duration,
+            )
+        except ValidationError as exc:
+            if hasattr(exc, "error_dict"):
+                raise
+            raise ValidationError(exc.messages) from exc
+
+
+class HabitTemplate(models.Model):
+    """Шаблон привычки из каталога (без владельца и флага публичности).
+
+    Attributes:
+        slug: Уникальный идентификатор для API.
+        action: Краткое описание действия.
+        place: Место выполнения.
+        time: Рекомендуемое время напоминания.
+        duration: Длительность в секундах (не более 120).
+        periodicity: Интервал между напоминаниями в днях (1–7).
+        is_pleasant: Приятный шаблон без награды.
+        suggested_related_template: Приятный шаблон для полезного.
+        reward: Текстовая награда вместо связи.
+        category: Рубрика витрины каталога.
+        tagline: Однострочное описание на карточке.
+        pair_group: Slug пары «полезная + награда».
+        sort_order: Порядок в списке каталога.
+        is_featured: Показывать в блоке «рекомендуем».
+    """
+
+    CATEGORY_CHOICES = [
+        ("health", "здоровье"),
+        ("focus", "фокус"),
+        ("calm", "спокойствие"),
+        ("home", "дом"),
+        ("social", "общение"),
+        ("learning", "обучение"),
+    ]
+
+    place = models.CharField("место", max_length=200)
+    time = models.TimeField("время")
+    action = models.CharField("действие", max_length=255)
+    is_pleasant = models.BooleanField("приятная", default=False)
+    suggested_related_template = models.ForeignKey(
+        "self",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="linked_useful_templates",
+        verbose_name="рекомендуемая приятная",
+    )
+    periodicity = models.PositiveSmallIntegerField(
+        "периодичность (дней)",
+        default=1,
+    )
+    reward = models.CharField("награда", max_length=255, blank=True, default="")
+    duration = models.PositiveSmallIntegerField("длительность (сек)")
+    category = models.CharField(
+        "категория",
+        max_length=32,
+        choices=CATEGORY_CHOICES,
+        default="health",
+    )
+    slug = models.SlugField("slug", max_length=64, unique=True)
+    tagline = models.CharField("подпись", max_length=119, blank=True, default="")
+    pair_group = models.SlugField("группа пары", max_length=64, blank=True, default="")
+    sort_order = models.PositiveIntegerField("порядок", default=0)
+    is_featured = models.BooleanField("рекомендуем", default=False)
+
+    class Meta:
+        verbose_name = "шаблон привычки"
+        verbose_name_plural = "шаблоны привычек"
+        ordering = ("sort_order", "slug")
+
+    def __str__(self) -> str:
+        return str(self.action)
+
+    def clean(self) -> None:
+        """Проверяет бизнес-правила шаблона перед сохранением."""
+        super().clean()
+        try:
+            run_template_validators(
+                is_pleasant=self.is_pleasant,
+                suggested_related_template=self.suggested_related_template,
                 periodicity=self.periodicity,
                 reward=self.reward,
                 duration=self.duration,

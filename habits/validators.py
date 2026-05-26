@@ -32,9 +32,7 @@ def validate_periodicity_days(periodicity: int | None) -> None:
     if periodicity is None:
         return
     if not MIN_PERIODICITY_DAYS <= periodicity <= MAX_PERIODICITY_DAYS:
-        raise ValidationError(
-            f"Периодичность должна быть от {MIN_PERIODICITY_DAYS} до {MAX_PERIODICITY_DAYS} дней."
-        )
+        raise ValidationError(f"Периодичность должна быть от {MIN_PERIODICITY_DAYS} до {MAX_PERIODICITY_DAYS} дней.")
 
 
 def validate_not_both_related_and_reward(
@@ -155,3 +153,37 @@ def run_habit_validators(
     validate_pleasant_habit_fields(is_pleasant, related_habit, reward)
     validate_useful_habit_has_reward(is_pleasant, related_habit, reward)
     validate_related_habit_owner(related_habit, user)
+
+
+def run_template_validators(
+    *,
+    is_pleasant: bool,
+    suggested_related_template: object | None,
+    periodicity: int,
+    reward: str,
+    duration: int,
+) -> None:
+    """Запускает правила валидации для шаблона HabitTemplate.
+
+    Args:
+        is_pleasant: Приятный или полезный шаблон.
+        suggested_related_template: Связанный приятный шаблон.
+        periodicity: Периодичность в днях.
+        reward: Текст награды.
+        duration: Длительность в секундах.
+
+    Raises:
+        ValidationError: При нарушении любого правила.
+    """
+    validate_duration_seconds(duration)
+    validate_periodicity_days(periodicity)
+    validate_not_both_related_and_reward(suggested_related_template, reward)
+    validate_pleasant_habit_fields(is_pleasant, suggested_related_template, reward)
+    validate_useful_habit_has_reward(is_pleasant, suggested_related_template, reward)
+    if suggested_related_template is not None:
+        from habits.models import HabitTemplate
+
+        if not isinstance(suggested_related_template, HabitTemplate):
+            return
+        if not suggested_related_template.is_pleasant:
+            raise ValidationError("Связанный шаблон должен быть приятным.")
