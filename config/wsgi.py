@@ -1,16 +1,18 @@
-"""
-WSGI config for config project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/6.0/howto/deployment/wsgi/
-"""
+"""WSGI: Django API + статика фронтенда из каталога frontend/."""
 
 import os
+from pathlib import Path
 
 from django.core.wsgi import get_wsgi_application
+from whitenoise import WhiteNoise
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
-application = get_wsgi_application()
+django_app = get_wsgi_application()
+application = WhiteNoise(
+    django_app,
+    root=str(BASE_DIR / "frontend"),
+    prefix="",
+    index_file="login.html",
+)
